@@ -1,0 +1,23 @@
+{
+	"Player" : {
+		"Name": null,
+
+		"Statistics": {
+			"Lv" : null,
+			"Hp" : null,
+			"Cold" : null,
+			"Stat" : {
+				"Strength" : null,
+				"Agility" : null,
+				"Resistance" : null,
+				"Intellect" : null,
+				"Luck" : null
+			}
+		},
+		"Inventory" : {},
+
+		"Info" : {
+			"Class" : null
+		}
+	}
+}
