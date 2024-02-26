@@ -56,22 +56,19 @@ Random_stat(player1, 50)
 Random_stat(player2, 50)
 
 def Fight(player1, player2):
-        print(player1)
-        def Enemy_move(PDamage, PDefens, EDamage, EDefens):
+        print(player1) #?
+        def Enemy_move(PDamage, PDefens, EDefens):
                 """Возможности противника"""
                 PDamage = PDamage
                 PDefens = PDefens
-                EDamage = EDamage
                 EDefens = EDefens
+
                 for val in player2["Player"]["Inventory"]:
                         if player2["Player"]["Inventory"][val].get("Equipment") == "Enable":
                                 if player2["Player"]["Inventory"][val].get("Урон") != None:
-                                        EDamage = player2["Player"]["Statistics"]["Stats"][1]  + random.randint(int(player2["Player"]["Inventory"][val].get("Урон")[0]), int(player2["Player"]["Inventory"][val].get("Урон")[2]))
-                                        
-                for val in player1["Player"]["Inventory"]:
-                        if player1["Player"]["Inventory"][val].get("Equipment") == "Enable":
-                                if player1["Player"]["Inventory"][val].get("Защита") != None:
-                                        EDefens = int(player1["Player"]["Inventory"][val].get("Защита")[0])
+                                        EDamage = player2["Player"]["Statistics"]["Stats"][1] + random.randint(int(player2["Player"]["Inventory"][val].get("Урон")[0]), int(player2["Player"]["Inventory"][val].get("Урон")[2]))
+                                else:
+                                        EDamage = player2["Player"]["Statistics"]["Stats"][1]
 
                 Hit = (EDamage)
 
@@ -80,20 +77,21 @@ def Fight(player1, player2):
                         if PDefens > 0:
                                 PDefens -= Hit
                                 if PDefens <= 0:
-                                        print("Броня пробита")
+                                        print(f"Вам нанесли {Hit} урона, сломав броню")
                         else:
                                 player1["Player"]["Statistics"]["Hp"] -= Hit
-                        print(f"Вам нанесли {Hit} урона)")
+                                print(f"Вам нанесли {Hit} урона")
                 else:
                         print("Вы увернулся от атаки!") 
-        
+                
+                return PDefens
+
         def Get_Damage_and_Defens(param):
                 if param == "PDmg":
                         for val in player1["Player"]["Inventory"]:
                                 if player1["Player"]["Inventory"][val].get("Equipment") == "Enable":
                                         if player1["Player"]["Inventory"][val].get("Урон", None) != None:
-                                                return random.randint(int(player1["Player"]["Inventory"][val].get("Урон")[0]), int(player1["Player"]["Inventory"][val].get("Урон")[2]))
-
+                                                return int((int(player1["Player"]["Inventory"][val].get("Урон")[0]) + int(player1["Player"]["Inventory"][val].get("Урон")[2]))/2)
                 if param == "PDef":                                                
                         for val in player1["Player"]["Inventory"]:
                                 if player1["Player"]["Inventory"][val].get("Equipment") == "Enable":
@@ -104,18 +102,17 @@ def Fight(player1, player2):
                         for val in player2["Player"]["Inventory"]:
                                 if player2["Player"]["Inventory"][val].get("Equipment") == "Enable":
                                         if player2["Player"]["Inventory"][val].get("Урон", None) != None:
-                                                return random.randint(int(player2["Player"]["Inventory"][val].get("Урон")[0]), int(player2["Player"]["Inventory"][val].get("Урон")[2]))
-
+                                                return int((int(player2["Player"]["Inventory"][val].get("Урон")[0]) + int(player2["Player"]["Inventory"][val].get("Урон")[2]))/2)
                 if param == "EDef":                                                
                         for val in player2["Player"]["Inventory"]:
                                 if player2["Player"]["Inventory"][val].get("Equipment") == "Enable":
                                         if player2["Player"]["Inventory"][val].get("Защита") != None:
                                                 return int(player2["Player"]["Inventory"][val].get("Защита")[0]) 
 
-        PDamage = Get_Damage_and_Defens("PDmg") + player1["Player"]["Statistics"]["Stats"][1] if Get_Damage_and_Defens("PDmg") != None else player1["Player"]["Statistics"]["Stats"][1]
+        PDamage_const = Get_Damage_and_Defens("PDmg") + player1["Player"]["Statistics"]["Stats"][1]if Get_Damage_and_Defens("PDmg") != None else player1["Player"]["Statistics"]["Stats"][1]
         PDefens = Get_Damage_and_Defens("PDef") + player1["Player"]["Statistics"]["Stats"][4] if Get_Damage_and_Defens("PDef") != None else player1["Player"]["Statistics"]["Stats"][4]
 
-        EDamage = Get_Damage_and_Defens("EDmg") + player2["Player"]["Statistics"]["Stats"][1] if Get_Damage_and_Defens("EDmg") != None else player2["Player"]["Statistics"]["Stats"][1]
+        EDamage_const = Get_Damage_and_Defens("EDmg") + player2["Player"]["Statistics"]["Stats"][1] if Get_Damage_and_Defens("EDmg") != None else player2["Player"]["Statistics"]["Stats"][1]
         EDefens = Get_Damage_and_Defens("EDef") + player2["Player"]["Statistics"]["Stats"][4] if Get_Damage_and_Defens("EDef") != None else player2["Player"]["Statistics"]["Stats"][4]
 
         Player_Dice_num = random.randint(player1["Player"]["Statistics"]["Lv"], player1["Player"]["Statistics"]["Lv"]+player1["Player"]["Statistics"]["Stats"][2])
@@ -124,14 +121,14 @@ def Fight(player1, player2):
         print(
 f"""
 {player1["Player"]["Name"]} Lv {player1["Player"]["Statistics"]["Lv"]} 
-HP: {player1["Player"]["Statistics"]["Hp"]} | Зщт {PDefens} |  Урон {PDamage }| Увр: {(player1["Player"]["Statistics"]["Stats"][2] - player2["Player"]["Statistics"]["Stats"][2])*10 if ((player1["Player"]["Statistics"]["Stats"][2] - player2["Player"]["Statistics"]["Stats"][2])*10)>=0 else 0}% 
+HP: {player1["Player"]["Statistics"]["Hp"]} | Зщт {PDefens} |  Урон {PDamage_const}| Увр: {(player1["Player"]["Statistics"]["Stats"][2] - player2["Player"]["Statistics"]["Stats"][2])*10 if ((player1["Player"]["Statistics"]["Stats"][2] - player2["Player"]["Statistics"]["Stats"][2])*10)>=0 else 0}% 
 
         |‾‾‾‾‾|        |‾‾‾‾‾|
         |  {Player_Dice_num}  |  -VS-  |  {Enemy_Dice_num}  |
         |_____|        |_____|
 
 {player2["Player"]["Name"]} Lv {player2["Player"]["Statistics"]["Lv"]} 
-HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {EDefens} |  Урон {EDamage} | Увр: {(player2["Player"]["Statistics"]["Stats"][2] - player1["Player"]["Statistics"]["Stats"][2])*10 if ((player2["Player"]["Statistics"]["Stats"][2] - player1["Player"]["Statistics"]["Stats"][2])*10)>=0 else 0}% 
+HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {EDefens} |  Урон {EDamage_const} | Увр: {(player2["Player"]["Statistics"]["Stats"][2] - player1["Player"]["Statistics"]["Stats"][2])*10 if ((player2["Player"]["Statistics"]["Stats"][2] - player1["Player"]["Statistics"]["Stats"][2])*10)>=0 else 0}% 
 
 """)    
         console = None
@@ -147,17 +144,18 @@ HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {EDefens} |  Урон {EDam
                         Frame = Player_Dice_num - Enemy_Dice_num
 
                         while Fight_now:
+                                                                                        
                                 print(
 f"""
 {player1["Player"]["Name"]} Lv {player1["Player"]["Statistics"]["Lv"]} 
-HP: {player1["Player"]["Statistics"]["Hp"]} | Зщт {PDefens} |  Урон {PDamage }| Увр: {(player1["Player"]["Statistics"]["Stats"][2] - player2["Player"]["Statistics"]["Stats"][2])*10 if ((player1["Player"]["Statistics"]["Stats"][2] - player2["Player"]["Statistics"]["Stats"][2])*10)>=0 else 0}% 
+HP: {player1["Player"]["Statistics"]["Hp"]} | Зщт {PDefens if PDefens > 0 else 0} |  Урон {PDamage_const}| Увр: {(player1["Player"]["Statistics"]["Stats"][2] - player2["Player"]["Statistics"]["Stats"][2])*10 if ((player1["Player"]["Statistics"]["Stats"][2] - player2["Player"]["Statistics"]["Stats"][2])*10)>=0 else 0}% 
 
         |‾‾‾‾‾|       
-        |  {{{Frame}}}|
+        |  {Frame} |
         |_____|
 
 {player2["Player"]["Name"]} Lv {player2["Player"]["Statistics"]["Lv"]} 
-HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {EDefens} |  Урон {EDamage} | Увр: {(player2["Player"]["Statistics"]["Stats"][2] - player1["Player"]["Statistics"]["Stats"][2])*10 if ((player2["Player"]["Statistics"]["Stats"][2] - player1["Player"]["Statistics"]["Stats"][2])*10)>=0 else 0}% 
+HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {EDefens if EDefens > 0 else 0} |  Урон {EDamage_const} | Увр: {(player2["Player"]["Statistics"]["Stats"][2] - player1["Player"]["Statistics"]["Stats"][2])*10 if ((player2["Player"]["Statistics"]["Stats"][2] - player1["Player"]["Statistics"]["Stats"][2])*10)>=0 else 0}% 
 
 1. Удар | 2. Движения | 3. Инвентарь | 4. Сбежать
 """)
@@ -171,23 +169,20 @@ HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {EDefens} |  Урон {EDam
                                                 if player1["Player"]["Inventory"][val].get("Equipment") == "Enable":
                                                         if player1["Player"]["Inventory"][val].get("Урон") != None:
                                                                 PDamage = player1["Player"]["Statistics"]["Stats"][1] + random.randint(int(player1["Player"]["Inventory"][val].get("Урон")[0]), int(player1["Player"]["Inventory"][val].get("Урон")[2]))
-                                        for val in player2["Player"]["Inventory"]:
-                                                if player2["Player"]["Inventory"][val].get("Equipment") == "Enable":
-                                                        if player2["Player"]["Inventory"][val].get("Защита") != None:
-                                                                PDefens = int(player2["Player"]["Inventory"][val].get("Защита")[0])
                                         Hit = PDamage
                                         Enemy_escape = (player2["Player"]["Statistics"]["Stats"][2] - player1["Player"]["Statistics"]["Stats"][2])*10 if ((player2["Player"]["Statistics"]["Stats"][2] - player1["Player"]["Statistics"]["Stats"][2])*10)>=0 else 0
                                         if random.randint(0, 100) <= 100-Enemy_escape:
                                                 if EDefens > 0:
                                                         EDefens -= Hit
                                                         if EDefens <= 0:
-                                                                print("Броня пробита")
+                                                                print(f"Вы нанесли {Hit} урона Противнику, сломав его броню")
                                                 else:
                                                         player2["Player"]["Statistics"]["Hp"] -= Hit
-                                                print(f"Вы нанесли {Hit} урона Противнику")
+                                                        print(f"Вы нанесли {Hit} урона Противнику")
                                         else:
                                                 print("Противник увернулся от атаки!") 
-                                        Enemy_move(PDamage, PDefens, EDamage, EDefens)
+                                        
+                                        PDefens = Enemy_move(PDamage, PDefens, EDefens)
 
                                 elif console == "2":
                                         pass
