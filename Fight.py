@@ -95,7 +95,12 @@ def Fight(player1, player2):
     def Hit(_player1, _player2):
         """Для расчёта урона от _player1 -> _player2"""
         _hit = Get_Damage_and_Defens("Damage", _player1)
-
+        HitStun = -10   # int(HitStun/1.5)
+        BlockStun = -2  # BlockStun-Вын\2
+        Parry = 15
+        MassInFrame = [1, -3, -8,
+                       4, -7, -13,
+                       11, -10, 20]
         words = []
         player_Num = 5_000_000
         if _player1 == player1:
@@ -134,13 +139,6 @@ def Fight(player1, player2):
     for item in player1["Player"]["Inventory"]:
         print(item)
     print("End_________________________________________")
-
-    HitStun = -10   # int(HitStun/1.5)
-    BlockStun = -2  # BlockStun-Вын\2
-    Parry = 15
-    MassInFrame = [1, -3, -8,
-                   4, -7, -13,
-                   11, -10, 20]
 
     PDamage_const = Get_Damage_and_Defens("Damage_const", player1)  # cp. знач. урона Игрока
     Defens[0] = Get_Damage_and_Defens("Defens", player1)
