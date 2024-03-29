@@ -86,21 +86,23 @@ def Fight(player1, player2):
                 result = player["Player"]["Statistics"]["Stats"][4]
                 if item.get("Equipment") == "Enable":
                     if item.get("Защита") != None:
-                         result += int(item.get("Защита")[0])
-                return  result
+                        result += int(item.get("Защита")[0])
+                return result
         print("Get_Damage_and_Defens сработала вне if: вывод 0")
         return 0
+
     Defens = [Get_Damage_and_Defens("Defens", player1), Get_Damage_and_Defens("Defens", player2)]
 
     def Hit(_player1, _player2):
         """Для расчёта урона от _player1 -> _player2"""
         _hit = Get_Damage_and_Defens("Damage", _player1)
-        HitStun = -10   # int(HitStun/1.5)
+        HitStun = -10  # int(HitStun/1.5)
         BlockStun = -2  # BlockStun-Вын\2
         Parry = 15
-        MassInFrame = [1, -3, -8,
-                       4, -7, -13,
-                       11, -10, 20]
+        MassInFrame = [
+            1, -3, -8,
+            4, -7, -13,
+            11, -10, 20]
         words = []
         player_Num = 5_000_000
         if _player1 == player1:
@@ -116,7 +118,13 @@ def Fight(player1, player2):
                      "Вы увернулся от атаки!"]
             player_Num = 0
 
-        Chance_To_Dodge = 0 if ((_player2["Player"]["Statistics"]["Stats"][2] - _player1["Player"]["Statistics"]["Stats"][2]) * 5) < 0 else (_player2["Player"]["Statistics"]["Stats"][2] - _player1["Player"]["Statistics"]["Stats"][2]) * 5
+        Chance_To_Dodge = 0 if ((_player2["Player"]["Statistics"]["Stats"][2] -
+                                 _player1["Player"]["Statistics"]["Stats"][2]) * 5) < 0 else (_player2["Player"][
+                                                                                                  "Statistics"][
+                                                                                                  "Stats"][2] -
+                                                                                              _player1["Player"][
+                                                                                                  "Statistics"][
+                                                                                                  "Stats"][2]) * 5
         if random.randint(0, 100) <= 100 - Chance_To_Dodge:
             if Defens[player_Num] > 0:
                 Defens[player_Num] -= _hit
@@ -151,20 +159,17 @@ def Fight(player1, player2):
                                          2])
     Enemy_Dice_num = random.randint(player2["Player"]["Statistics"]["Lv"],
                                     player2["Player"]["Statistics"]["Lv"] + player2["Player"]["Statistics"]["Stats"][2])
+    text_title_player = f"""{player1["Player"]["Name"]} Lv {player1["Player"]["Statistics"]["Lv"]} 
+HP: {player1["Player"]["Statistics"]["Hp"]} | Зщт {Defens[0]} |  Урон {PDamage_const}| Увр: {(player1["Player"]["Statistics"]["Stats"][2] - player2["Player"]["Statistics"]["Stats"][2]) * 5 if ((player1["Player"]["Statistics"]["Stats"][2] - player2["Player"]["Statistics"]["Stats"][2]) * 5) >= 0 else 0}%"""
+    text_title_enemy = f""" {player2["Player"]["Name"]} Lv {player2["Player"]["Statistics"]["Lv"]} 
+HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {Defens[1]} |  Урон {EDamage_const} | Увр: {(player2["Player"]["Statistics"]["Stats"][2] - player1["Player"]["Statistics"]["Stats"][2]) * 5 if ((player2["Player"]["Statistics"]["Stats"][2] - player1["Player"]["Statistics"]["Stats"][2]) * 5) >= 0 else 0}% """
+    print(f"""
+{text_title_player}
 
-    print(
-        f"""
-{player1["Player"]["Name"]} Lv {player1["Player"]["Statistics"]["Lv"]} 
-HP: {player1["Player"]["Statistics"]["Hp"]} | Зщт {Defens[0]} |  Урон {PDamage_const}| Увр: {(player1["Player"]["Statistics"]["Stats"][2] - player2["Player"]["Statistics"]["Stats"][2]) * 5 if ((player1["Player"]["Statistics"]["Stats"][2] - player2["Player"]["Statistics"]["Stats"][2]) * 5) >= 0 else 0}% 
-
-		|‾‾‾‾‾|        |‾‾‾‾‾|
-		|  {Player_Dice_num}  |  -VS-  |  {Enemy_Dice_num}  |
-		|_____|        |_____|
-
-{player2["Player"]["Name"]} Lv {player2["Player"]["Statistics"]["Lv"]} 
-HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {Defens[1]} |  Урон {EDamage_const} | Увр: {(player2["Player"]["Statistics"]["Stats"][2] - player1["Player"]["Statistics"]["Stats"][2]) * 5 if ((player2["Player"]["Statistics"]["Stats"][2] - player1["Player"]["Statistics"]["Stats"][2]) * 5) >= 0 else 0}% 
-
-""")
+        |‾‾‾‾‾|        |‾‾‾‾‾|
+        |  {Player_Dice_num}  |  -VS-  |  {Enemy_Dice_num}  |
+        |_____|        |_____|
+{text_title_enemy}""")
     # console временная переменная
     console = None
     while not (console == "1" or console == "2"):
@@ -178,18 +183,21 @@ HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {Defens[1]} |  Урон {ED
             Frame = Player_Dice_num - Enemy_Dice_num
 
             while Fight_now:
-
-                print(
-                    f"""
+                text_title_player = f"""
 {player1["Player"]["Name"]} Lv {player1["Player"]["Statistics"]["Lv"]} 
-HP: {player1["Player"]["Statistics"]["Hp"]} | Зщт {Defens[0] if Defens[0] > 0 else 0} |  Урон {PDamage_const}| Увр: {(player1["Player"]["Statistics"]["Stats"][2] - player2["Player"]["Statistics"]["Stats"][2]) * 5 if ((player1["Player"]["Statistics"]["Stats"][2] - player2["Player"]["Statistics"]["Stats"][2]) * 5) >= 0 else 0}% 
-
-		|‾‾‾‾‾|       
-		|  {Frame} |
-		|_____|
-
+HP: {player1["Player"]["Statistics"]["Hp"]} | Зщт {Defens[0] if Defens[0] >= 0 else 0} |  Урон {PDamage_const}| Увр: {(player1["Player"]["Statistics"]["Stats"][2] - player2["Player"]["Statistics"]["Stats"][2]) * 5 if ((player1["Player"]["Statistics"]["Stats"][2] - player2["Player"]["Statistics"]["Stats"][2]) * 5) >= 0 else 0}%"""
+                text_title_enemy = f"""
 {player2["Player"]["Name"]} Lv {player2["Player"]["Statistics"]["Lv"]} 
-HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {Defens[1] if Defens[1] > 0 else 0} |  Урон {EDamage_const} | Увр: {(player2["Player"]["Statistics"]["Stats"][2] - player1["Player"]["Statistics"]["Stats"][2]) * 5 if ((player2["Player"]["Statistics"]["Stats"][2] - player1["Player"]["Statistics"]["Stats"][2]) * 5) >= 0 else 0}% 
+HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {Defens[1] if Defens[1] >= 0 else 0} |  Урон {EDamage_const} | Увр: {(player2["Player"]["Statistics"]["Stats"][2] - player1["Player"]["Statistics"]["Stats"][2]) * 5 if ((player2["Player"]["Statistics"]["Stats"][2] - player1["Player"]["Statistics"]["Stats"][2]) * 5) >= 0 else 0}% """
+
+                print(f"""
+{text_title_player}
+
+       |‾‾‾‾‾|       
+       | {Frame} |
+       |_____|
+
+{text_title_enemy}
 
 1. Удар | 2. Движения | 3. Инвентарь | 4. Сбежать
 """)
@@ -232,7 +240,7 @@ HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {Defens[1] if Defens[1] > 0
         elif console == "2":
             escape = (player1["Player"]["Statistics"]["Stats"][2] - player2["Player"]["Statistics"]["Stats"][
                 2]) * 5 if ((player1["Player"]["Statistics"]["Stats"][2] - player2["Player"]["Statistics"]["Stats"][
-                2]) * 5) >= 0 else 0
+                    2]) * 5) >= 0 else 0
             print(f"Шанс сбежать: {escape}%")
             if random.randint(0, 100) >= 100 - escape:
                 print("Вы избежали сражения")
