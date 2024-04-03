@@ -72,3 +72,7 @@ for category in Items:
     for Item_type in Items[category]:
         for Item in Items[category][Item_type]:
             id_list.append(Item)
+
+if __name__ == "__main__":
+    while True:
+        print(id_list[int(input())])
