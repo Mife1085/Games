@@ -91,6 +91,13 @@ def Fight(player1, player2):
                     else:
                         return 5
 
+            elif param == "Type":
+                if item.get("Type") != None:
+                    if item.get("Equipment") == "Enable":
+                        return item.get("Type")
+                    else:
+                        return "Невесомое"
+
             elif param == "Defens":
                 result = player["Player"]["Statistics"]["Stats"][4]
                 if item.get("Equipment") == "Enable":
@@ -109,20 +116,26 @@ def Fight(player1, player2):
         nonlocal Combo_Num
         _hit = Get_Damage_and_Defens("Damage", _player1)
         HitStun = -10
-        BlockStun = -2  # BlockStun-Вын\2
+        BlockStun = -2  # BlockStun-Вын/2
         Parry = 15
-        MassInFrame = [
-            1, -3, -8,
-            4, -7, -13,
-            11, -10, 20]
+        MassInFrame = {
+            "Невесомое оружие/Попадание" : 1,
+            "Невесомое оружие/Промах" : -3,
+            "Невесомое оружие/Парирование" : -8,
+            "Легкое оружие/Попадание" : 4,
+            "Легкое оружие/Промах" : -7,
+            "Легкое оружие/Парирование" : -13,
+            "Тяжёлое оружие/Попадание" : 11,
+            "Тяжёлое оружие/Промах" : -10,
+            "Тяжёлое оружие/Парирование" : 20}
         words = []
-        player_Num = 5_000_000
+        _player1_is = 5_000_000
         if _player1 == player1:
             words = [f"Вы нанесли {_hit} урона Противнику, сломав его броню",
                      f"Вы нанесли {_hit} урона, повредив броню",
                      f"Вы нанесли {_hit} урона Противнику",
                      "Противник увернулся от атаки!"]
-            player_Num = 1
+            _player1_is = 1
 
 
         elif _player1 == player2:
@@ -130,22 +143,28 @@ def Fight(player1, player2):
                      f"Вам нанесли {_hit} урона, но броня взяла урон на себя",
                      f"Вам нанесли {_hit} урона",
                      "Вы увернулся от атаки!"]
-            player_Num = 0
+            _player1_is = 0
             # _Frame = _Frame * -1
-
+        player1_attack_type = Get_Damage_and_Defens("Type", _player1)
         player1_attack_speed = Get_Damage_and_Defens("Speed", _player1)
         if player1_attack_speed + _Frame > Get_Damage_and_Defens("Speed", _player2):
             Combo_Num += 1
             print(f"HUI =========== {Combo_Num}")
-            HitStun = int(HitStun/(1.5*Combo_Num))
-            _Frame -= HitStun + player1_attack_speed if _player1 == player1 else (HitStun+player1_attack_speed)*(-1)
-            print(f'Frame : {_Frame}\nOKKKKKKKKKKKKKKKKKK')
+            HitStun = int(HitStun/(Combo_Num))
+            _Frame -= HitStun + player1_attack_speed #if _player1 == player1 else (HitStun+player1_attack_speed)*(-1)
+            print(f'Frame : {_Frame}    KKKKKKKKKKKKKKKKKK')
             Chance_To_Dodge = ((_player2["Player"]["Statistics"]["Stats"][2] - _player1["Player"]["Statistics"]["Stats"][2]) * 5)
             Chance_To_Dodge = 0 if Chance_To_Dodge < 0 else Chance_To_Dodge
             if random.randint(0, 100) <= 100 - Chance_To_Dodge:
-                if Defens[player_Num] > 0:
-                    Defens[player_Num] -= _hit
-                    if Defens[player_Num] <= 0:
+                if player1_attack_type == "Невесомое":
+                    _Frame -= MassInFrame["Невесомое оружие/Попадание"]
+                elif player1_attack_type == "Легкое":
+                    _Frame -= MassInFrame["Легкое оружие/Попадание"]
+                elif player1_attack_type == "Тяжёлое":
+                    _Frame -= MassInFrame["Тяжёлое оружие/Попадание"]
+                if Defens[_player1_is] > 0:
+                    Defens[_player1_is] -= _hit
+                    if Defens[_player1_is] <= 0:
                         print(words[0])
                         # точка интереса При поломке брони
                     else:
@@ -154,17 +173,34 @@ def Fight(player1, player2):
                     _player2["Player"]["Statistics"]["Hp"] -= _hit
                     print(words[2])
             else:
+                if player1_attack_type == "Невесомое":
+                    _Frame += MassInFrame["Невесомое оружие/Промах"]
+                elif player1_attack_type == "Легкое":
+                    _Frame += MassInFrame["Легкое оружие/Промах"]
+                elif player1_attack_type == "Тяжёлое":
+                    _Frame += MassInFrame["Тяжёлое оружие/Промах"]
                 print(words[3])
+        elif player1_attack_speed + Frame == Get_Damage_and_Defens("Speed", _player2):
+            print("Клинч!!!")
+            quit()
         else:
-            print(f'Frame : {_Frame}')
-            print("Huuuuuuuuuui")
+            print(f'Frame : {_Frame}   Huuuuuuuuuui ')
             Combo_Num = 0
-            Enemy_move(_Frame)
-        return _Frame
+            if _player1_is == 0:
+                Player_Move(_Frame)
+            else:
+                Enemy_move(_Frame*(-1))
+        if _player1_is == 1:
+            Player_Move(_Frame)
+        else:
+            Enemy_move(_Frame*(-1))
 
-    def Enemy_move(Frame):
+    def Enemy_move(_Frame):
         """Возможности противника"""
-        Hit(player2, player1, Frame)
+        nonlocal Frame
+        Frame = _Frame
+        Hit(player2, player1, _Frame)
+
 
     # check
     print(player1["Player"]["Inventory"])
@@ -201,14 +237,14 @@ HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {Defens[1]} |  Урон {ED
     # console временная переменная
     console = None
     while not (console == "1" or console == "2"):
-        console = input("Выберите\n1. Сражaться | 2. Сбежать\n: ")
+        console = input("Выберите/n1. Сражaться | 2. Сбежать/n: ")
 
     Fight_or_Escape = True
     while Fight_or_Escape:
 
         if console == "1":
             Fight_now = True
-            Frame = 10
+            Frame = -10
             Combo_Num = 0
             # Frame = Player_Dice_num - Enemy_Dice_num
 
@@ -231,39 +267,39 @@ HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {Defens[1] if Defens[1] >= 
 {Get_Damage_and_Defens("Speed", player2)}
 1. Удар | 2. Движения | 3. Инвентарь | 4. Сбежать
 """)
-                console = input(": ")
-                if console == "1":
-                    # Идея фреймов в буфере порядка действий. При +0 фреймов. Действие игрока Удар -> нож (7 фреймов)
-                    # и Действии противника Удар Кувалдой (10 ф.) Число общих фреймов становиться -7. Игрок наносит
-                    # удар и снова выбирает действие. Выбор падает на перекат в сторону (4). Игрок не успевает и
-                    # получат урон и минус по общим фреймам
+                def Player_Move(Frame):
+                    console = input(": ")
+                    if console == "1":
+                        # Идея фреймов в буфере порядка действий. При +0 фреймов. Действие игрока Удар -> нож (7 фреймов)
+                        # и Действии противника Удар Кувалдой (10 ф.) Число общих фреймов становиться -7. Игрок наносит
+                        # удар и снова выбирает действие. Выбор падает на перекат в сторону (4). Игрок не успевает и
+                        # получат урон и минус по общим фреймам
 
-                    Frame = Hit(player1, player2, Frame)
-                    # Enemy_move()
+                        return Hit(player1, player2, Frame)
+                        # Enemy_move()
 
-                elif console == "2":
-                    pass
+                    elif console == "2":
+                        pass
 
-                elif console == "3":
-                    pass
+                    elif console == "3":
+                        pass
 
-                elif console == "4":
-                    Fight_now = False
-                    console = "2"
+                    elif console == "4":
+                        Fight_now = False
+                        console = "2"
 
-                else:
-                    pass  # ciu()
+                    else:
+                        pass  # ciu()
 
                 if player1["Player"]["Statistics"]["Hp"] <= 0:
-                    print("Поражение")
-                    Fight_now = False
-                    Fight_or_Escape = False
+                        print("Поражение")
+                        Fight_now = False
+                        Fight_or_Escape = False
                 if player2["Player"]["Statistics"]["Hp"] <= 0:
                     print("Победа")
                     Fight_now = False
                     Fight_or_Escape = False
-
-
+                Frame = Player_Move(Frame)
 
 
 
