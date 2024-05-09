@@ -1,3 +1,4 @@
+from time import sleep
 import random
 
 import Items
@@ -121,13 +122,13 @@ HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {Defens[1] if Defens[1] >= 
 {text_title_player}
 {Get_Damage_and_Defens("Speed", player1)}
        |‾‾‾‾‾|       
-       | {_Frame} |
+       | {_Frame}|
        |_____|
 
 {text_title_enemy}
 {Get_Damage_and_Defens("Speed", player2)}
-1. Удар | 2. Движения | 3. Инвентарь | 4. Сбежать
 """)
+        sleep(1)
         if player1["Player"]["Statistics"]["Hp"] <= 0:
             print("Поражение")
             quit()
@@ -139,9 +140,6 @@ HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {Defens[1] if Defens[1] >= 
     def Hit(_player1, _player2, _Frame=0):
         """Для расчёта урона от _player1 -> _player2"""
         nonlocal Combo_Num
-
-        Show_status(_Frame)
-
         _hit = Get_Damage_and_Defens("Damage", _player1)
         HitStun = 10
         BlockStun = 2  # BlockStun-Вын/2
@@ -176,24 +174,21 @@ HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {Defens[1] if Defens[1] >= 
         player1_attack_type = Get_Damage_and_Defens("Type", _player1)
         player1_attack_speed = Get_Damage_and_Defens("Speed", _player1)
 
-        if player1_attack_speed + _Frame > Get_Damage_and_Defens("Speed", _player2):
+        if _Frame - player1_attack_speed > - Get_Damage_and_Defens("Speed", _player2):
             Chance_To_Dodge = ((_player2["Player"]["Statistics"]["Stats"][2] - _player1["Player"]["Statistics"]["Stats"][2]) * 5)
             Chance_To_Dodge = 0 if Chance_To_Dodge < 0 else Chance_To_Dodge
             if random.randint(0, 100) <= 100 - Chance_To_Dodge:
 
                 # Подсчёт массы для увелечения стана
                 _MassInFrame = 0
-                if player1_attack_type == "Невесомое":
-                    _MassInFrame = MassInFrame["Невесомое оружие/Попадание"]
-                elif player1_attack_type == "Легкое":
-                    _MassInFrame = MassInFrame["Легкое оружие/Попадание"]
-                elif player1_attack_type == "Тяжёлое":
-                    _MassInFrame = MassInFrame["Тяжёлое оружие/Попадание"]
+                if player1_attack_type == "Невесомое": _MassInFrame = MassInFrame["Невесомое оружие/Попадание"]
+                elif player1_attack_type == "Легкое": _MassInFrame = MassInFrame["Легкое оружие/Попадание"]
+                elif player1_attack_type == "Тяжёлое": _MassInFrame = MassInFrame["Тяжёлое оружие/Попадание"]
                 # Комбо увеличивается HitStun уменьшается
                 Combo_Num += 1
-                _Frame -= - player1_attack_speed
-                _Frame += int(HitStun-(Combo_Num*5)) + _MassInFrame
-
+                _Frame -= player1_attack_speed
+                _Frame += int(HitStun-(Combo_Num*5)) + _MassInFrame if HitStun-(Combo_Num*5) > 0 else _MassInFrame
+                Show_status(_Frame)
                 if Defens[_player1_is] > 0:
                     Defens[_player1_is] -= _hit
                     if Defens[_player1_is] <= 0:
@@ -205,32 +200,35 @@ HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {Defens[1] if Defens[1] >= 
                     _player2["Player"]["Statistics"]["Hp"] -= _hit
                     print(words[2])
             else:
-                if player1_attack_type == "Невесомое":
-                    _Frame += MassInFrame["Невесомое оружие/Промах"]       # -3f
-                elif player1_attack_type == "Легкое":
-                    _Frame += MassInFrame["Легкое оружие/Промах"]          # -7f
-                elif player1_attack_type == "Тяжёлое":
-                    _Frame += MassInFrame["Тяжёлое оружие/Промах"]         # -10f
+                if player1_attack_type == "Невесомое": _Frame += MassInFrame["Невесомое оружие/Промах"]       # -3f
+                elif player1_attack_type == "Легкое": _Frame += MassInFrame["Легкое оружие/Промах"]          # -7f
+                elif player1_attack_type == "Тяжёлое": _Frame += MassInFrame["Тяжёлое оружие/Промах"]         # -10f
                 print(words[3])
         elif player1_attack_speed + Frame == Get_Damage_and_Defens("Speed", _player2):
+            Show_status(_Frame)
             print("Клинч!!!")
             quit()
         else:
-            print(f'Frame : {_Frame}   Huuuuuuuuuui ')
+            Show_status(_Frame)
+            print("Комбо закончилось")
             Combo_Num = 0
             if _player1_is == 0:
                 Player_Move(_Frame)
             else:
                 Enemy_move(_Frame*(-1))
         if _player1_is == 1:
+            Show_status(_Frame)
             Player_Move(_Frame)
         else:
+            Show_status(_Frame)
             Enemy_move(_Frame*(-1))
 
     def Enemy_move(_Frame):
         """Возможности противника"""
         nonlocal Frame
         Frame = _Frame
+
+
         Hit(player2, player1, _Frame)
 
 
@@ -276,13 +274,18 @@ HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {Defens[1]} |  Урон {ED
 
         if console == "1":
             Fight_now = True
-            Frame = 5
+            Frame = -5
             Combo_Num = 0
             # Frame = Player_Dice_num - Enemy_Dice_num
-
+            Show_status(Frame)
             while Fight_now:
-                def Player_Move(Frame):
-                    Show_status(Frame)
+
+                def Player_Move(_Frame):
+                    nonlocal Frame
+                    Frame = _Frame
+
+
+                    print("\n1. Удар | 2. Движения | 3. Инвентарь | 4. Сбежать")
 
                     console = input(": ")
                     if console == "1":
@@ -291,7 +294,7 @@ HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {Defens[1]} |  Урон {ED
                         # удар и снова выбирает действие. Выбор падает на перекат в сторону (4). Игрок не успевает и
                         # получат урон и минус по общим фреймам
 
-                        return Hit(player1, player2, Frame)
+                        Hit(player1, player2, _Frame)
                         # Enemy_move()
 
                     elif console == "2":
@@ -307,8 +310,12 @@ HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {Defens[1]} |  Урон {ED
                     else:
                         pass  # ciu()
 
-                Frame = Player_Move(Frame)
-
+                Player_Move_speed = Get_Damage_and_Defens("Speed", player1)
+                Enemy_Move_speed = Get_Damage_and_Defens("Speed", player2)
+                if Frame - Player_Move_speed > - Enemy_Move_speed:
+                    Player_Move(Frame)
+                else:
+                    Enemy_move(Frame)
 
 
         elif console == "2":
