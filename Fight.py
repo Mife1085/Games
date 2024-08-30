@@ -1,6 +1,9 @@
 import random
+import Inventory
 import Items
-import pdb
+ItemsCollection = Items.ItemsCollection()
+ItemsCollection.Load()
+
 player1 = {
 	"Player": {
 		"Name": "Mife",
@@ -20,14 +23,13 @@ player1 = {
 		},
 
 		"Inventory": [
-			# Items.id_list[0], Items.id_list[3], Items.id_list[5], Items.id_list[23]
-
-		],
+			ItemsCollection.get_item_by_id(7)		],
 
 		"Info": {}
 	}
 }
 player1["Player"]["Statistics"]["Hp"] = player1["Player"]["Statistics"]["Stats"]["Survive"] * 5
+
 player2 = {
 	"Player": {
 		"Name": "Enemy",
@@ -37,21 +39,25 @@ player2 = {
 			"Hp": 10,
 			"Gold": 0,
 			"Stats": {
-				"Survive":      2,  # Жиз
-				"Power":        2,  # Сил
-				"Dexterity":    3,  # Лов
-				"Endurance":    1,  # Вын
+				"Survive":      10,  # Жиз
+				"Power":        0,  # Сил
+				"Dexterity":    0,  # Лов
+				"Endurance":    0,  # Вын
 				"Intelligence": 0,  # Инт
 				"Luck":         0  # Удч
 			}
 		},
 		"Inventory": [
-			# Items.id_list[0]
+			# ItemsCollection.id_list[0]
+			ItemsCollection.get_item_by_id(40)
 		],
 
 		"Info": {}
 	}
 }
+
+player1["Player"]["Inventory"][0]["Equipment"] = "Enable"
+player2["Player"]["Inventory"][0]["Equipment"] = "Enable"
 
 class Time_class():
 	"""docstring for Time_class"""
@@ -61,18 +67,24 @@ class Time_class():
 
 	def Get_Damage_and_Defens(self, param):
 		print("Starting Get_Damage_and_Defens")
-		player1["Player"]["Inventory"].append({"None": None})  # Если инвентарь пуст код не работает
-		player2["Player"]["Inventory"].append({"None": None})
 
 		result = 0
+		if  player1["Player"]["Inventory"] == []:
+			result = player1["Player"]["Statistics"]["Stats"]["Power"] # Если инвентарь пуст код не работает
+		if player2["Player"]["Inventory"] == []:
+			result = player1["Player"]["Statistics"]["Stats"]["Power"] # Этот кусок кода просто костыль
+
+
 		for item in player1["Player"]["Inventory"]:
 			if item.get("Equipment") == "Enable":
 
 				if item.get("Damage") is not None:
+					parts = item.get("Damage").strip().split('-')
+					Damage_list = [int(part) for part in parts]
 					if param == "PDamage_const":
-						result = int((int(item.get("Damage")[0]) + int(item.get("Damage")[2]))/2) # cp. знач. урона оружия | индексы отображают разброс Например 2-4 урона
+						result = player1["Player"]["Statistics"]["Stats"]["Power"] + int((Damage_list[0] + Damage_list[1])/2) # cp. знач. урона оружия | индексы отображают разброс Например 2-4 урона
 					elif param == "PDamage":
-						result = player1["Player"]["Statistics"]["Stats"]["Power"] + random.randint(int(item.get("Damage")[0]), int(item.get("Damage")[2]))
+						result = player1["Player"]["Statistics"]["Stats"]["Power"] + random.randint(Damage_list[0], Damage_list[1])
 
 				elif param == "PDefens":
 					if item.get("Защита") is not None:
@@ -85,21 +97,16 @@ class Time_class():
 		for item in player2["Player"]["Inventory"]:
 			if item.get("Equipment") == "Enable":
 				if item.get("Damage") is not None:
+					parts = item.get("Damage").strip().split('-')
+					Damage_list = [int(part) for part in parts]
 					if param == "EDamage_const":
-						result = int((int(item.get("Damage")[0]) + int(item.get("Damage")[2]))/2)
+						result = player2["Player"]["Statistics"]["Stats"]["Power"] + int((Damage_list[0] + Damage_list[1])/2) # cp. знач. урона оружия | индексы отображают разброс Например 2-4 урона
 					elif param == "EDamage":
-						result = player2["Player"]["Statistics"]["Stats"]["Power"] + random.randint(int(item.get("Damage")[0]), int(item.get("Damage")[2]))
+						result = player2["Player"]["Statistics"]["Stats"]["Power"] + random.randint(Damage_list[0], Damage_list[1])
 
 				elif param == "EDefens":
 					if item.get("Защита") is not None:
 						result = int(item.get("Защита")[0])
-
-			else:
-				if param == "EDamage":
-					result = player2["Player"]["Statistics"]["Stats"]["Power"]
-
-		player1["Player"]["Inventory"].pop(-1) # Если инвентарь пуст код не работает
-		player2["Player"]["Inventory"].pop(-1)
 
 		return result
 
@@ -155,13 +162,13 @@ class Time_class():
 
 	def Fight(self, player1, player2):
 		print("Starting Fight")
-		self.Random_stat(player1, 50)
-		self.Random_stat(player2, 50)
+		self.Random_stat(player1, 10)
+		self.Random_stat(player2, 10)
 
-		PDamage_const = self.Get_Damage_and_Defens("PDamage_const") + player1["Player"]["Statistics"]["Stats"]["Power"] # cp. знач. урона Игрока
+		PDamage_const = self.Get_Damage_and_Defens("PDamage_const") # cp. знач. урона Игрока
 		self.PDefens = self.Get_Damage_and_Defens("PDefens") + player1["Player"]["Statistics"]["Stats"]["Endurance"]
 
-		EDamage_const = self.Get_Damage_and_Defens("EDamage_const") + player2["Player"]["Statistics"]["Stats"]["Power"]
+		EDamage_const = self.Get_Damage_and_Defens("EDamage_const")
 		self.EDefens = self.Get_Damage_and_Defens("EDef") + player2["Player"]["Statistics"]["Stats"]["Endurance"]
 
 		Player_Dice_num = random.randint(player1["Player"]["Statistics"]["Lv"], player1["Player"]["Statistics"]["Lv"]+player1["Player"]["Statistics"]["Stats"]["Dexterity"])
@@ -234,24 +241,8 @@ class Time_class():
 						pass
 
 					elif console == "3":
-						inv = player1["Player"]["Inventory"]
-						objects = []
-						for key in inv:
-							objects.append(key)
-						feature = []
-						for key2 in objects:
-							feature.append(inv[key2])
-						print(objects, feature)
-						print("Equipment: ")
-						for key, itemue in zip(objects, feature):
-							if itemue.get("Equipment") == "Enable":
-								print(f"""{key} | {itemue.get("Damage", "")} {itemue.get("Defense", "")}""")
-
-						print("Else: ")
-						for key, itemue in zip(objects, feature):
-							if itemue.get("Equipment", "Disabled") == "Disabled":
-								print(f"""{key} | {itemue.get("Damage", "")} {itemue.get("Defense", "")}""")
-
+						inv = Inventory("save.json")
+						inv
 					elif console == "4":
 						Fight_now = False
 						console = "2"

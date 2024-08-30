@@ -1,107 +1,155 @@
-Items = {
-    "Weapons": {
-        "Swords": [],
-        "Maces": [],
-        "Spears": [],
-        "Axes": [],
-        "Knifes": [],
-        "Rapier": [],
-        "Bow": []
-    },
 
-    "Armor": {
-        "Shields": [],
-        "Helmet": [],
-        "Breastplates": [],
-        "Gloves": [],
-        "Boots": [],
-    },
-
-    "Magic": {
-        "Sticks": [],
-        "Scrolls": [],
-        "Leaves": []
-    },
-
-    "Accessories": {
-        "Rings": [],
-        "Amulets": []
-    }}
 # Оружие: сабля, Секира,
-
-def CreateNewItem(type_name, Name, Damage=None, Speed=None, Scale=None, Type=None, word_ending=None):
-    """Функция для создания предметов
-    Пример использования: CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Сабля"}, Name="Сабля", Damage="2-4", Speed="6f", Scale="CB--", Type=["Режущий", "Одноручный", "Легкое"])"""
-    if type_name["Вид"] in Items: # Проверка на правильный вид предмета
-
-        if type_name["Вид"] == "Weapons":
-
-            word_ending = word_ending # Для правильного русского окончания
-
-            # Создания списка имён Матерьял + Название оружия
-            Name_list = []
-            materials = ["Деревянн", "Железн", "Бронзов", "Стальн", "Титанов"]
-            for material in materials:
-                Name_list.append(material + word_ending + " " + Name)
-
-            # Создание списка растущего урона на каждый уровень оружия
-            Damage_list = [f"{str(int(Damage[0]))}-{str(int(Damage[2]))}"]
-            for Damage_scale in materials[1:]:
-                Damage_list.append(f"{str(int(Damage[0])*2)}-{str(int(Damage[2])*2)}")
-
-            Speed = Speed
-
-            Type = Type
-
-            Scale = Scale
-
-            # Добавления в Items
-            Items[ type_name["Вид"] ][ type_name["Подвид"] ] = []
-            for i in range(len(materials)):
-                Items[ type_name["Вид"] ][ type_name["Подвид" ]].append({"Name": Name_list[i], "Damage": Damage_list[i], "Speed": Speed, "Scale": Scale, "Type": Type, "Equipment": "Disable"})
-
-        elif type_name["Вид"] == "Armors":
-            pass
-    else:
-        print("Неправильно указан раздел")
-        exit()
-
-
-
-
-# Функция для добавления ID к предметам и создания id-карты
-def add_id_to_items(items):
-    global_id = 1  # Начинаем с 1
-    id_mapping = {}  # Словарь для хранения ID и предметов
-
-    for category, subcategories in items.items():
-        for subcategory, item_list in subcategories.items():
-            for item in item_list:
-                item["ID"] = global_id  # Присваиваем глобальный ID
-                id_mapping[global_id] = item  # Сохраняем предмет в словаре по ID
-                global_id += 1  # Увеличиваем глобальный ID на 1
-
-    return id_mapping  # Возвращаем словарь ID и предметов
-
-def init_Items():
-    CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Сабли"}, Name="Сабля", Damage="2-4", Speed="6f", Scale="CB--", Type=["Режущий", "Одноручный", "Легкое"], word_ending="ая")
-
-    Items["ID_Map"] = add_id_to_items(Items)
-
-def get_Items(ID_Item):
-    return Items["ID_Map"][ID_Item]
-
 import json
-def Save_Items(items):
-    with open("config.json", "w") as file:
-        json.dump(items, file, indent=2)
+class ItemsCollection():
+    
+    def __init__(self):
+        self.Items = {
+            "Weapons": {
+                "Swords": [], # Мечи
+                "Sabers": [], # Сабли
+                "Maces": [],  # Булавы
+                "Spears": [], # Копья
+                "Axes": [],   # Топоры
+                "Knifes": [], # Ножи
+                "Rapier": [], # Рапиры
+                "Bow": []     # Луки
+            },
 
-def Load_Items(items):
-    with open("config.json", "r") as file:
-        return json.load(file)
+            "Armor": {
+                "Shields": [],      # Щиты
+                "Helmet": [],       # Шлем
+                "Breastplates": [], # Нагрудники
+                "Gloves": [],       # Перчатки
+                "Boots": [],        # Ботинки
+            },
+
+            "Magic": {
+                "Sticks": [],  # Палочки
+                "Scrolls": [], # Свитки
+                "Leaves": []   # Листья
+            },
+
+            "Accessories": {
+                "Rings": [],  # Кольца
+                "Amulets": [] # Амулеты
+            }}
+
+    def CreateNewItem(self, type_name, Name, Damage=None, Speed=None, Scale=None, Type=None, Defens=None, word_ending=None):
+        """Функция для создания предметов
+        Пример использования: self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Сабля"}, Name="Сабля", Damage="2-4", Speed="6f", Scale="CB--", Type=["Режущий", "Одноручный", "Легкое"])"""
+        if type_name["Вид"] in self.Items: # Проверка на правильный вид предмета
+
+            if type_name["Вид"] == "Weapons":
+
+                word_ending = word_ending # Для правильного русского окончания
+
+                # Создания списка имён Матерьял + Название оружия
+                Name_list = []
+                materials = ["Деревянн", "Железн", "Бронзов", "Стальн", "Титанов"]
+                for material in materials:
+                    Name_list.append(material + word_ending + " " + Name)
+
+                # Создание списка растущего урона на каждый уровень оружия
+                Damage_list = [f"{str(int(Damage[0]))}-{str(int(Damage[2]))}"]
+                for Damage_scale in range(1, len(materials[1:])+1):
+                    Damage_list.append(f"{str(int(Damage[0])*2*Damage_scale)}-{str(int(Damage[2])*2*Damage_scale)}")
+
+                Speed = Speed
+
+                Type = Type
+
+                Scale = Scale
+
+                # Добавления в self.Items
+                self.Items[ type_name["Вид"] ][ type_name["Подвид"] ] = []
+                for i in range(len(materials)):
+                    self.Items[ type_name["Вид"] ][ type_name["Подвид" ]].append({"Name": Name_list[i], "Damage": Damage_list[i], "Speed": Speed, "Scale": Scale, "Type": Type, "Equipment": "Disable"})
+
+            elif type_name["Вид"] == "Armor":
+
+                word_ending = word_ending # Для правильного русского окончания
+
+                # Создания списка имён Матерьял + Название оружия
+                Name_list = []
+                materials = ["Кожан", "Кольчужн", "Латн", "Стальн", "Титанов"]
+                for material in materials:
+                    Name_list.append(material + word_ending + " " + Name)
+
+                Weight_list = ["Легкие", "Легкие", "Средние", "Средние", "Тяжёлые"]
+
+                Defens_bonus = range(1, 6)
+
+                Defens = Defens
+
+
+                self.Items[ type_name["Вид"] ][ type_name["Подвид"] ] = []
+                for i in range(len(materials)):
+                    self.Items[ type_name["Вид"] ][ type_name["Подвид" ]].append({"Name": Name_list[i], "Defens": Defens*Defens_bonus[i], "Weight": Weight_list[i], "Equipment": "Disable"})
+
+
+        else:
+            print("Неправильно указан раздел")
+            exit()
+
+    # Функция для добавления ID к предметам и создания id-карты
+    @staticmethod
+    def add_id_to_items(items):
+        global_id = 1  # Начинаем с 1
+        id_mapping = {}  # Словарь для хранения ID и предметов
+
+        for category, subcategories in items.items():
+            for subcategory, item_list in subcategories.items():
+                for item in item_list:
+                    item["ID"] = global_id  # Присваиваем глобальный ID
+                    id_mapping[global_id] = item  # Сохраняем предмет в словаре по ID
+                    global_id += 1  # Увеличиваем глобальный ID на 1
+
+        return id_mapping  # Возвращаем словарь ID и предметов
+
+    def init(self):
+        # Создание оружия
+
+        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Swords"}, Name="Меч", Damage="3-4", Speed="7f", Scale="CE--", Type={"Тип_удара": "Режущий", "Хват": "Одноручный", "Дистанция": "Близко", "Вес": "Легкое"}, word_ending="ый")
+        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Sabers"}, Name="Сабля", Damage="2-4", Speed="6f", Scale="DC--", Type={"Тип_удара": "Режущий", "Хват": "Одноручный", "Дистанция": "Близко", "Вес": "Легкое"}, word_ending="ая")
+        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Maces"}, Name="Булова", Damage="3-4", Speed="8f", Scale="B---", Type={"Тип_удара": "Дробящий", "Хват": "Одноручный", "Дистанция": "Близко", "Вес": "Тяжёлое"}, word_ending="ая")
+        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Spears"}, Name="Копьё", Damage="4-7", Speed="10f", Scale="DD--", Type={"Тип_удара": "Колющий", "Хват": "Двуручный", "Дистанция": "Средняя", "Вес": "Тяжёлое"}, word_ending="ое")
+        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Axes"}, Name="Топор", Damage="3-5", Speed="6f", Scale="C---", Type={"Тип_удара": "Режущий", "Хват": "Одноручный", "Дистанция": "Близко", "Вес": "Легкое"}, word_ending="ый")
+        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Knifes"}, Name="Кинжал", Damage="1-3", Speed="4f", Scale="EB--", Type={"Тип_удара": "Режущий/Колющий", "Хват": "Одноручный", "Дистанция": "Близко", "Вес": "Невесомое"}, word_ending="ый")
+        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Rapier"}, Name="Рапира", Damage="3-5", Speed="6f", Scale="-B--", Type={"Тип_удара": "Колющий", "Хват": "Одноручный", "Дистанция": "Близко", "Вес": "Легкое"}, word_ending="ая")
+        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Bow"}, Name="Лук", Damage="6-8", Speed="14f", Scale="ED--", Type={"Тип_удара": "Колющий", "Хват": "Двуручный", "Дистанция": "Дальняя", "Вес": "Легкое"}, word_ending="ый")
+
+        # Создание брони
+        self.CreateNewItem(type_name={"Вид": "Armor", "Подвид": "Sheld"}, Name="Щит", Defens=5, Speed="5f", word_ending="ый")
+        self.CreateNewItem(type_name={"Вид": "Armor", "Подвид": "Helmet"}, Name="Шлем", Defens=5, word_ending="ый")
+        self.CreateNewItem(type_name={"Вид": "Armor", "Подвид": "Breastplates"}, Name="Нагрудник", Defens=7, word_ending="ый")
+        self.CreateNewItem(type_name={"Вид": "Armor", "Подвид": "Gloves"}, Name="Перчатка", Defens=2, word_ending="ая")
+        self.CreateNewItem(type_name={"Вид": "Armor", "Подвид": "Boots"}, Name="Ботинок", Defens=4, word_ending="ый")
+
+        self.Items["ID_Map"] = self.add_id_to_items(self.Items)
+
+    def get_item_by_id(self, ID_Item):
+        return self.Items["ID_Map"][str(ID_Item)]
+
+
+    def Save(self, items):
+        with open("config.json", "w") as file:
+            json.dump(items, file, indent=2)
+
+    def Load(self):
+        with open("config.json", "r") as file:
+            self.Items = json.load(file)
+            return self.Items
 
 if __name__ == "__main__":
-    pass
+    Items = ItemsCollection()
+    Items.Load()
+    # Items.init()
+    # Items.Save(Items.Items)
+
+
+    Inv = [Items.get_item_by_id(1), Items.get_item_by_id(2), Items.get_item_by_id(43), Items.get_item_by_id(50)]
+    print(json.dumps(Inv, indent=2))
 
 # Items_GPT = {
 #     "Accessories": {
@@ -188,4 +236,4 @@ if __name__ == "__main__":
 #     }
 # }
 #
-# ########################################################################################################################
+# ######################################################################################################################
