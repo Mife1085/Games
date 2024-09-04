@@ -50,6 +50,8 @@ class ItemsCollection():
                 for material in materials:
                     Name_list.append(material + word_ending + " " + Name)
 
+                Name_list[3] = "Стальной " + Name
+
                 # Создание списка растущего урона на каждый уровень оружия
                 Damage_list = [f"{str(int(Damage[0]))}-{str(int(Damage[2]))}"]
                 for Damage_scale in range(1, len(materials[1:])+1):
@@ -75,6 +77,8 @@ class ItemsCollection():
                 materials = ["Кожан", "Кольчужн", "Латн", "Стальн", "Титанов"]
                 for material in materials:
                     Name_list.append(material + word_ending + " " + Name)
+
+                Name_list[3] = "Стальной " + Name
 
                 Weight_list = ["Легкие", "Легкие", "Средние", "Средние", "Тяжёлые"]
 
@@ -120,7 +124,7 @@ class ItemsCollection():
         self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Bow"}, Name="Лук", Damage="6-8", Speed="14f", Scale="ED--", Type={"Тип_удара": "Колющий", "Хват": "Двуручный", "Дистанция": "Дальняя", "Вес": "Легкое"}, word_ending="ый")
 
         # Создание брони
-        self.CreateNewItem(type_name={"Вид": "Armor", "Подвид": "Sheld"}, Name="Щит", Defens=5, Speed="5f", word_ending="ый")
+        self.CreateNewItem(type_name={"Вид": "Armor", "Подвид": "Shields"}, Name="Щит", Defens=5, Speed="5f", word_ending="ый")
         self.CreateNewItem(type_name={"Вид": "Armor", "Подвид": "Helmet"}, Name="Шлем", Defens=5, word_ending="ый")
         self.CreateNewItem(type_name={"Вид": "Armor", "Подвид": "Breastplates"}, Name="Нагрудник", Defens=7, word_ending="ый")
         self.CreateNewItem(type_name={"Вид": "Armor", "Подвид": "Gloves"}, Name="Перчатка", Defens=2, word_ending="ая")
@@ -133,8 +137,8 @@ class ItemsCollection():
 
 
     def Save(self, items):
-        with open("config.json", "w") as file:
-            json.dump(items, file, indent=2)
+        with open("config.json", "w", encoding='utf-8') as file:
+            json.dump(items, file, ensure_ascii=False, indent=4)
 
     def Load(self):
         with open("config.json", "r") as file:
@@ -143,13 +147,13 @@ class ItemsCollection():
 
 if __name__ == "__main__":
     Items = ItemsCollection()
-    Items.Load()
-    # Items.init()
-    # Items.Save(Items.Items)
+    # Items.Load()
+    Items.init()
+    Items.Save(Items.Items)
 
 
-    Inv = [Items.get_item_by_id(1), Items.get_item_by_id(2), Items.get_item_by_id(43), Items.get_item_by_id(50)]
-    print(json.dumps(Inv, indent=2))
+    # Inv = [Items.get_item_by_id(1), Items.get_item_by_id(2), Items.get_item_by_id(43), Items.get_item_by_id(50)]
+    # print(json.dumps(Inv, indent=2))
 
 # Items_GPT = {
 #     "Accessories": {

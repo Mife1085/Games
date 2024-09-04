@@ -1,8 +1,14 @@
+import os
 import random
-import Inventory
+from Inventory import Inventory
+
 import Items
 ItemsCollection = Items.ItemsCollection()
 ItemsCollection.Load()
+
+# Установка размера экрана
+os.system(f'mode con: cols={50} lines={40}')
+
 
 player1 = {
 	"Player": {
@@ -23,7 +29,7 @@ player1 = {
 		},
 
 		"Inventory": [
-			ItemsCollection.get_item_by_id(7)		],
+			ItemsCollection.get_item_by_id(7), ItemsCollection.get_item_by_id(6), ItemsCollection.get_item_by_id(1)		],
 
 		"Info": {}
 	}
@@ -175,7 +181,7 @@ class Time_class():
 		Enemy_Dice_num = random.randint(player2["Player"]["Statistics"]["Lv"], player2["Player"]["Statistics"]["Lv"]+player2["Player"]["Statistics"]["Stats"]["Dexterity"])
 
 		print(
-	f"""1
+	f"""
 	{player1["Player"]["Name"]} Lv {player1["Player"]["Statistics"]["Lv"]} 
 	HP: {player1["Player"]["Statistics"]["Hp"]} | Зщт {self.PDefens} |  Урон {PDamage_const}| Увр: {(player1["Player"]["Statistics"]["Stats"]["Dexterity"] - player2["Player"]["Statistics"]["Stats"]["Dexterity"])*10 if ((player1["Player"]["Statistics"]["Stats"]["Dexterity"] - player2["Player"]["Statistics"]["Stats"]["Dexterity"])*10)>=0 else 0}% 
 
@@ -187,7 +193,7 @@ class Time_class():
 	HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {self.EDefens} |  Урон {EDamage_const} | Увр: {(player2["Player"]["Statistics"]["Stats"]["Dexterity"] - player1["Player"]["Statistics"]["Stats"]["Dexterity"])*10 if ((player2["Player"]["Statistics"]["Stats"]["Dexterity"] - player1["Player"]["Statistics"]["Stats"]["Dexterity"])*10)>=0 else 0}% 
 
 	""")
-		# console времяная переменная
+		# console временная переменная
 		console = None
 		while (console == "1" or console == "2") == False:
 			console = input("Выберите\n1. Сражться | 2. Сбежать\n: ")
@@ -203,23 +209,23 @@ class Time_class():
 				while Fight_now:
 
 					print(
-	f"""
-	{player1["Player"]["Name"]} Lv {player1["Player"]["Statistics"]["Lv"]} 
-	HP: {player1["Player"]["Statistics"]["Hp"]} | Зщт {self.PDefens if self.PDefens > 0 else 0} |  Урон {PDamage_const}| Увр: {(player1["Player"]["Statistics"]["Stats"]["Dexterity"] - player2["Player"]["Statistics"]["Stats"]["Dexterity"])*10 if ((player1["Player"]["Statistics"]["Stats"]["Dexterity"] - player2["Player"]["Statistics"]["Stats"]["Dexterity"])*10)>=0 else 0}% 
+f"""
+{player1["Player"]["Name"]} Lv {player1["Player"]["Statistics"]["Lv"]} 
+HP: {player1["Player"]["Statistics"]["Hp"]} | Зщт {self.PDefens if self.PDefens > 0 else 0} |  Урон {PDamage_const}| Увр: {(player1["Player"]["Statistics"]["Stats"]["Dexterity"] - player2["Player"]["Statistics"]["Stats"]["Dexterity"])*10 if ((player1["Player"]["Statistics"]["Stats"]["Dexterity"] - player2["Player"]["Statistics"]["Stats"]["Dexterity"])*10)>=0 else 0}% 
 
-		|‾‾‾‾‾|       
-		|  {Frame} |
-		|_____|
+	|‾‾‾‾‾|       
+	|  {Frame} |
+	|_____|
 
-	{player2["Player"]["Name"]} Lv {player2["Player"]["Statistics"]["Lv"]} 
-	HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {self.EDefens if self.EDefens > 0 else 0} |  Урон {EDamage_const} | Увр: {(player2["Player"]["Statistics"]["Stats"]["Dexterity"] - player1["Player"]["Statistics"]["Stats"]["Dexterity"])*10 if ((player2["Player"]["Statistics"]["Stats"]["Dexterity"] - player1["Player"]["Statistics"]["Stats"]["Dexterity"])*10)>=0 else 0}% 
+{player2["Player"]["Name"]} Lv {player2["Player"]["Statistics"]["Lv"]} 
+HP: {player2["Player"]["Statistics"]["Hp"]} | Зщт {self.EDefens if self.EDefens > 0 else 0} |  Урон {EDamage_const} | Увр: {(player2["Player"]["Statistics"]["Stats"]["Dexterity"] - player1["Player"]["Statistics"]["Stats"]["Dexterity"])*10 if ((player2["Player"]["Statistics"]["Stats"]["Dexterity"] - player1["Player"]["Statistics"]["Stats"]["Dexterity"])*10)>=0 else 0}% 
 
-	1. Удар | 2. Движения | 3. Инвентарь | 4. Сбежать
-	""")
+1. Удар | 2. Движения | 3. Инвентарь | 4. Сбежать
+""")
 					console = input(": ")
 					if console == "1":
-					# Идея фраймов в буфере поряда действий.
-					# При +0 фраймов. Действие игрока Удар -> нож (7 фреймов) и Действии противника Удар Кувалдой (10 ф.)
+					# Идея фрэймов в буфере поряда действий.
+					# При +0 фрэймов. Действие игрока Удар -> нож (7 фреймов) и Действии противника Удар Кувалдой (10 ф.)
 					# Число общих фреймов становиться -7. Игрок наносит удар и снова выбирает действие. Выбор падает на перекат в сторону (4).
 					# Игрок не успевает и получат урон и минус по общим фреймам
 						Hit =  self.Get_Damage_and_Defens("PDamage")
@@ -241,8 +247,22 @@ class Time_class():
 						pass
 
 					elif console == "3":
-						inv = Inventory("save.json")
-						inv
+						inv = Inventory(player1["Player"]["Inventory"])
+						Inventory_Scene = True
+						choice_item = 0
+						while Inventory_Scene:
+							inv.show_inventory()
+							print("1. Вверх | 2. Вниз | 3. Использовать | 4. Выход")
+							console = input(": ")
+							if console == "1":
+								choice_item = inv.Up()
+							elif console == "2":
+								choice_item = inv.Down()
+							elif console == "3":
+								inv.Equipment(choice_item)
+
+							elif console == "4":
+								Inventory_Scene = False
 					elif console == "4":
 						Fight_now = False
 						console = "2"
@@ -269,12 +289,12 @@ class Time_class():
 				if random.randint(0, 100) >= 100-escape:
 					print("Вы избежали сражения")
 					Fight_or_Escape = False
-				else:   
+				else:
 					print("Вы не смогли сбежать")
 					console = "1"
 					Fight_now = False
 					self.Enemy_move()
-			else:   
+			else:
 				pass # ciu()
 Game = Time_class(player1, player2)
 Game.Fight(player1, player2)
