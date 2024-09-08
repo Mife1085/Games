@@ -1,7 +1,7 @@
 
 # Оружие: сабля, Секира,
 import json
-class ItemsCollection():
+class ItemsCollection(object):
     
     def __init__(self):
         self.Items = {
@@ -63,7 +63,7 @@ class ItemsCollection():
 
                 Scale = Scale
 
-                # Добавления в self.Items
+                # Добавления в self. Items
                 self.Items[ type_name["Вид"] ][ type_name["Подвид"] ] = []
                 for i in range(len(materials)):
                     self.Items[ type_name["Вид"] ][ type_name["Подвид" ]].append({"Name": Name_list[i], "Damage": Damage_list[i], "Speed": Speed, "Scale": Scale, "Type": Type, "Equipment": "Disable"})
@@ -114,14 +114,14 @@ class ItemsCollection():
     def init(self):
         # Создание оружия
 
-        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Swords"}, Name="Меч", Damage="3-4", Speed="7f", Scale="CE--", Type={"Тип_удара": "Режущий", "Хват": "Одноручный", "Дистанция": "Близко", "Вес": "Легкое"}, word_ending="ый")
-        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Sabers"}, Name="Сабля", Damage="2-4", Speed="6f", Scale="DC--", Type={"Тип_удара": "Режущий", "Хват": "Одноручный", "Дистанция": "Близко", "Вес": "Легкое"}, word_ending="ая")
-        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Maces"}, Name="Булова", Damage="3-4", Speed="8f", Scale="B---", Type={"Тип_удара": "Дробящий", "Хват": "Одноручный", "Дистанция": "Близко", "Вес": "Тяжёлое"}, word_ending="ая")
-        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Spears"}, Name="Копьё", Damage="4-7", Speed="10f", Scale="DD--", Type={"Тип_удара": "Колющий", "Хват": "Двуручный", "Дистанция": "Средняя", "Вес": "Тяжёлое"}, word_ending="ое")
-        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Axes"}, Name="Топор", Damage="3-5", Speed="6f", Scale="C---", Type={"Тип_удара": "Режущий", "Хват": "Одноручный", "Дистанция": "Близко", "Вес": "Легкое"}, word_ending="ый")
-        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Knifes"}, Name="Кинжал", Damage="1-3", Speed="4f", Scale="EB--", Type={"Тип_удара": "Режущий/Колющий", "Хват": "Одноручный", "Дистанция": "Близко", "Вес": "Невесомое"}, word_ending="ый")
-        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Rapier"}, Name="Рапира", Damage="3-5", Speed="6f", Scale="-B--", Type={"Тип_удара": "Колющий", "Хват": "Одноручный", "Дистанция": "Близко", "Вес": "Легкое"}, word_ending="ая")
-        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Bow"}, Name="Лук", Damage="6-8", Speed="14f", Scale="ED--", Type={"Тип_удара": "Колющий", "Хват": "Двуручный", "Дистанция": "Дальняя", "Вес": "Легкое"}, word_ending="ый")
+        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Swords"}, Name="Меч", Damage="3-4", Speed="7f", Scale="CE--", Type={"Тип удара": "Режущий", "Хват": "Одноручный", "Дистанция": "Близко", "Вес": "Легкое"}, word_ending="ый")
+        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Sabers"}, Name="Сабля", Damage="2-4", Speed="6f", Scale="DC--", Type={"Тип удара": "Режущий", "Хват": "Одноручный", "Дистанция": "Близко", "Вес": "Легкое"}, word_ending="ая")
+        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Maces"}, Name="Булова", Damage="3-4", Speed="8f", Scale="B---", Type={"Тип удара": "Дробящий", "Хват": "Одноручный", "Дистанция": "Близко", "Вес": "Тяжёлое"}, word_ending="ая")
+        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Spears"}, Name="Копьё", Damage="4-7", Speed="10f", Scale="DD--", Type={"Тип удара": "Колющий", "Хват": "Двуручный", "Дистанция": "Средняя", "Вес": "Тяжёлое"}, word_ending="ое")
+        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Axes"}, Name="Топор", Damage="3-5", Speed="6f", Scale="C---", Type={"Тип удара": "Режущий", "Хват": "Одноручный", "Дистанция": "Близко", "Вес": "Легкое"}, word_ending="ый")
+        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Knifes"}, Name="Кинжал", Damage="1-3", Speed="4f", Scale="EB--", Type={"Тип удара": "Режущий/Колющий", "Хват": "Одноручный", "Дистанция": "Близко", "Вес": "Невесомое"}, word_ending="ый")
+        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Rapier"}, Name="Рапира", Damage="3-5", Speed="6f", Scale="-B--", Type={"Тип удара": "Колющий", "Хват": "Одноручный", "Дистанция": "Близко", "Вес": "Легкое"}, word_ending="ая")
+        self.CreateNewItem(type_name={"Вид": "Weapons", "Подвид": "Bow"}, Name="Лук", Damage="6-8", Speed="14f", Scale="ED--", Type={"Тип удара": "Колющий", "Хват": "Двуручный", "Дистанция": "Дальняя", "Вес": "Легкое"}, word_ending="ый")
 
         # Создание брони
         self.CreateNewItem(type_name={"Вид": "Armor", "Подвид": "Shields"}, Name="Щит", Defens=5, Speed="5f", word_ending="ый")
@@ -138,18 +138,18 @@ class ItemsCollection():
 
     def Save(self, items):
         with open("config.json", "w", encoding='utf-8') as file:
-            json.dump(items, file, ensure_ascii=False, indent=4)
+            json.dump(items, fp=file, ensure_ascii=False, indent=4)
 
     def Load(self):
-        with open("config.json", "r") as file:
+        with open("config.json", "r", encoding='utf-8') as file:
             self.Items = json.load(file)
             return self.Items
 
 if __name__ == "__main__":
     Items = ItemsCollection()
     # Items.Load()
-    Items.init()
-    Items.Save(Items.Items)
+    # Items.init()
+    # Items.Save(Items.Items)
 
 
     # Inv = [Items.get_item_by_id(1), Items.get_item_by_id(2), Items.get_item_by_id(43), Items.get_item_by_id(50)]
@@ -240,4 +240,4 @@ if __name__ == "__main__":
 #     }
 # }
 #
-# ######################################################################################################################
+#######################################################################################################################
