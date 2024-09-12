@@ -46,112 +46,203 @@ class Inventory:
 
     def show_inventory(self):
         """Отображает все предметы в инвентаре."""
-        if self.inventory:
-            print("-_-_-_-_-_-_-_-_-_-_-_Инвентарь_-_-_-_-_-_-_-_-_-_-_-")
-            print("Оружие:")
-            Weapon_item_id_list = []  # Список ID оружия
-            Armor_item_id_list = []  # Список ID брони
-            Enable_item_id_list = []  # Список ID экипированных предметов
-            Other_item_id_list = []  # Список ID других предметов
-            All_item = []
-            # Перебираем предметы в инвентаре и классифицируем их
-            for item in self.inventory:
-                if item.get("Scale"):  # Проверяем, является ли предмет оружием
-                    Weapon_item_id_list.append(item)
-                    All_item.append(item)
-                if item.get("Defens"):  # Проверяем, является ли предмет броней
-                    Armor_item_id_list.append(item)
-                    All_item.append(item)
-                if item.get("Equipment") == "Enable":  # Проверяем, экипирован ли предмет
-                    Enable_item_id_list.append(item)
-                if item.get("Name"):  # Добавляем все предметы в список других
-                    All_item.append(item)
+        if not self.inventory:
+            print("Инвентарь пуст.")
+            return
 
-            Other_item_id_list = [item for item in All_item if item not in Weapon_item_id_list + Armor_item_id_list + Enable_item_id_list]
-            self.All_item_id_list = Weapon_item_id_list + Armor_item_id_list + Enable_item_id_list + Other_item_id_list
+        categorized_items = {
+            "Оружие": [],
+            "Броня": [],
+            "Экипированные": [],
+            "Прочие": []
+        }
+
+        # Классификация предметов
+        for item in self.inventory:
+            if item.get("Scale"):
+                categorized_items["Оружие"].append(item)
+            elif item.get("Defens"):
+                categorized_items["Броня"].append(item)
+            if item.get("Equipment") == "Enable":
+                categorized_items["Экипированные"].append(item)
+
+        categorized_items["Прочие"] = [
+            item for item in self.inventory if item not in
+            categorized_items["Оружие"] + categorized_items["Броня"] + categorized_items["Экипированные"]
+        ]
+
+        # Функция для создания словаря свойств предметов
+        def create_item_properties_dict(item_list):
+            properties_dict = {}
+            for item in item_list:
+                item_name = item.get("Name", "Без названия")
+                attributes = [
+                    f"Урон: {item.get('Damage')}",
+                    f"Скорость: {item.get('Speed')}",
+                    f"Прирост: {item.get('Scale')}",
+                    f"Защита: {item.get('Defens')}",
+                    f"Вес: {item.get('Weight')}"
+                ]
+
+                # Добавляем свойства из Type, если они существуют
+                if "Type" in item:
+                    for key, value in item["Type"].items():
+                        attributes.append(f"{key}: {value}")
+
+                # Фильтруем пустые свойства
+                properties_dict[item_name] = [attr for attr in attributes if attr.split(": ")[1] != 'None']
+            return properties_dict
+
+        # Функция для отображения предметов
+
+#
+#
+#
 
 
-            text_name = []
-            text_attribute = list(range(4))
-
-            # Получение информации о
-            print("Оружие:")
-            attribute_list = []
-            if Weapon_item_id_list:
-                for item in Weapon_item_id_list:
-                    text_name.append(item["Name"])
-                    attribute_list.append(f'Урон: {item["Damage"]}')
-                    attribute_list.append(f'Скорость: {item["Speed"]}')
-                    attribute_list.append(f'Прирост: {item["Scale"]}')
-                    attribute_list.append(f'Тип удара: {item["Type"]["Тип удара"]}')
-                    attribute_list.append(f'Хват: {item["Type"]["Хват"]}')
-                    attribute_list.append(f'Дистанция: {item["Type"]["Дистанция"]}')
-                    attribute_list.append(f'Вес: {item["Type"]["Вес"]}')
+        # Выводим информацию о классах предметов
+        print("""
+|*                                 *|
+|*         ___Инвентарь___         *|
+|*                                 *|
+""")
+        title_category_list = list(categorized_items.keys())
+        items_category_list = list(categorized_items.values())
 
 
-                def set_attribute(self, name, attribute):
-                    attribute_list.append(f'{name}: {item[attribute]}')
+
+        name_attribute_items = [
+                ["Урон", "Скорость", "Прирост"],
+                ["Защита", "Вес"],
+                [],
+                []]
+
+        space = 25
+        text_title_items = []
+        text_attribute_items = []
+        # num_main = 0
+        for num_main in range(len(title_category_list)):
+            # Создания списка с названиями предметов
 
 
-                text_attribute[0] = attribute_list
+            num_category = 0
+            attributes_list_for_choice_item = []
+            def choice_item_attributes():
+                _how_many_items = 0
+                for cat in items_category_list:
+                    _how_many_items += len(cat)
+                    if self.choice_item >= _how_many_items:
+                        nonlocal num_category
+                        num_category += 1
+                    if cat:
+                        for att in cat:
+                            attributes_list_for_choice_item.append(att)
+                    else:
+                        attributes_list_for_choice_item.append(["", "", "", "", ""])
 
-                        # print("-> " + text if self.choice_item == self.All_item_id_list.index(id) else text)
-            else:
-                text_attribute[0] = []
-                print("Пусто")
+                return list(attributes_list_for_choice_item[self.choice_item].values())
 
-            from pprint import pprint
-            print(text_name)
-            print(text_attribute)
+            attributes = choice_item_attributes()
 
-            # Отображаем броню
-            print("Броня:")
-            attribute_list = []
-            if Armor_item_id_list:
-                for item in Armor_item_id_list:
-                    text_name.append(item["Name"])
-                    attribute_list.append(f'Защита: {item["Damage"]}')
-                    if item.get("Speed"):
-                        attribute_list.append(f'Скорость: {item["Speed"]}')
-                    attribute_list.append(f'Вес: {item["Weight"]}')
+            value_attribute_items = []
 
-                text_attribute[1] = attribute_list
+            # добавляет атрибуты предмета в value_attribute_items
+            for item_attribute_index in range(1, len(name_attribute_items)+1):
+                value_attribute_items.append(f"{attributes[item_attribute_index]}")
 
-            else:
-                print("Пусто")
-                text_attribute[1] = []
 
-            # Отображаем другие предметы
-            print("Прочее:")
-            attribute_list = []
-            if Other_item_id_list:
-                for item in Other_item_id_list:
-                    text_name.append(item["Name"])
-                    # attribute_list.append(f'Описание: {item["Description"]}')
-                    if item.get("Action"):
-                        attribute_list.append(f'Использование: {item["Action"]}')
+            # Разбирает атрибут Type в кладке Оружие
+            if type(attributes[4]) == type({}):
+                for key, value in attributes[4].items():
+                    name_attribute_items[num_category].append(key)
+                    value_attribute_items.append(value)
+                value_attribute_items.pop(3)
 
-                text_attribute[2] = attribute_list
-            else:
-                print("Пусто")
-                text_attribute[2] = []
 
-            # Отображаем экипированные предметы
-            print("Экипировано:")
-            attribute_list = []
-            if Enable_item_id_list:
-                for item in Enable_item_id_list:
-                    text_name.append(item["Name"])
+            # Объединяет имя и значение атрибута
+            [text_attribute_items.append(f'{name_attribute_items[num_category][i]}: {value_attribute_items[i]}') for i in range(len(name_attribute_items[num_main]))]
 
-                text_attribute[3] = attribute_list
-            else:
-                print("Пусто")
-                text_attribute[3] = []
 
-            print("____________________________________________")
-        else:
-            print("Ваш инвентарь пуст.")
+#
+# Создать список с помощью команд ниже. Разделить каждую строчку через .split() по | и удалить пустые строки
+#
+            # Добавление в text_title_items всех строчек справа
+            text_title_items.append(f"{list(categorized_items.keys())[num_main]}: {' '*(space-len(list(categorized_items.keys())[num_main]))}| ")
 
+            how_many_items = len(items_category_list[num_main]) # Кол-во в списке предметов в категории Оружие
+            [text_title_items.append(
+                f'{items_category_list[num_main][number]["Name"]}  {" "*(space-len(items_category_list[num_main][number]["Name"]))}| ')
+                for number in range(how_many_items)]
+            text_title_items.append(f'{" "*26} | ')
+
+            # Выравнивание кол-во элементов в двух списках
+            if len(text_attribute_items) < len(text_title_items):
+                [text_attribute_items.append("") for i in range( len(text_attribute_items), len(text_title_items))]
+            if len(text_attribute_items) > len(text_title_items):
+                [text_title_items.append(f'{" "*26} | ') for i in range( len(text_title_items), len(text_attribute_items))]
+
+            # print(text_title_items)
+        print(text_attribute_items)
+        for i, o in zip(text_title_items, text_attribute_items):
+            print(i, o)
+
+            # # Данные инвентаря
+            # inventory = [
+            #     {"name": "Деревянный Меч", "damage": "Урон: 3-4"},
+            #     {"name": "Железный Меч", "speed": "Скорость: 7f"},
+            #     {"name": "Броня", "bonus": "Прирост: CE--"},
+            #     {"name": "Латный Щит", "attack_type": "Тип удара: Режущий"},
+            #     {"name": "Титановый Шлем", "hands": "Хват: Одноручный"},
+            #     {"name": "Прочее", "distance": "Дистанция: Близко"},
+            #     {"name": "Пусто"},
+            #     {"name": "Экипировано"},
+            #     {"name": "Пусто"}
+            # ]
+            #
+            # # Функция для отображения инвентаря
+            # def display_inventory(selected_index):
+            #     print(f"{'Название предмета':<30} | {'Свойства'}")
+            #     print("-" * 50)
+            #
+            #     for index, item in enumerate(inventory):
+            #         if index == selected_index:
+            #             print(f"# -> {item['name']:<27} | {item.get('damage', item.get('speed', item.get('bonus', item.get('attack_type', item.get('hands', item.get('distance', ''))))))}")
+            #         else:
+            #             if 'damage' in item:
+            #                 print(f"{'':<30} | {item['damage']}")
+            #             elif 'speed' in item:
+            #                 print(f"{item['name']:<30} | {item['speed']}")
+            #             elif 'bonus' in item:
+            #                 print(f"{item['name']:<30} | {item['bonus']}")
+            #             elif 'attack_type' in item:
+            #                 print(f"{item['name']:<30} | {item['attack_type']}")
+            #             elif 'hands' in item:
+            #                 print(f"{item['name']:<30} | {item['hands']}")
+            #             elif 'distance' in item:
+            #                 print(f"{item['name']:<30} | {item['distance']}")
+            #             else:
+            #                 print(f"{item['name']:<30} | {'-' * 10}")
+            #
+            # # Основная программа
+            # try:
+            #     choice = int(input(f"Выберите предмет (0 - {len(inventory) - 1}): "))
+            #     if 0 <= choice < len(inventory):
+            #         display_inventory(choice)
+            #     else:
+            #         print("Неверный выбор. Пожалуйста, выберите номер в диапазоне.")
+            # except ValueError:
+            #     print("Пожалуйста, введите целое число.")
+            # print(title + ":")
+
+
+            # if items:
+            #
+            #     print(f" ->{items['Name']}" if items['Name'] == list(items[])[self.choice_item] else f"{items['Name']}")
+            #     for prop in properties:
+            #         print(f"             {prop}")
+            #     print()  # Отделяем предметы пустой строкой
+            # else:
+            #     print("Пусто")
     def Up(self):
         """Перемещает выбор предмета вверх."""
         self.choice_item -= 1 if self.choice_item >= 0 else 0  # Уменьшаем индекс выбранного предмета
@@ -202,3 +293,20 @@ if __name__ == "__main__":
 # Пусто                    | Вес: Легкое
 # Экипировано:             |
 # Пусто                    |
+
+# Реализация
+#print("_—"*19)
+#print("_—"*5 + "Инвентарь" + "_—"*5)
+#print("_—"*19)
+#
+#
+#
+# for num1, num2 in zip(range(len(text_name)), range(len(text_attribute))):
+#    space = 10
+#    space -= len(text_name[num1])
+#    if choice_item == text_name[num1]:
+#       space -= 2
+#       print("->" + text_name[num1] + ":" + " "*space + "| " + text_attribute[num1][num2])
+#
+#    print(text_name[num1] + ":" + " "*space + "| " + text_attribute[num1][num2])
+#

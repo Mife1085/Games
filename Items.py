@@ -148,8 +148,8 @@ class ItemsCollection(object):
 if __name__ == "__main__":
     Items = ItemsCollection()
     # Items.Load()
-    # Items.init()
-    # Items.Save(Items.Items)
+    Items.init()
+    Items.Save(Items.Items)
 
 
     # Inv = [Items.get_item_by_id(1), Items.get_item_by_id(2), Items.get_item_by_id(43), Items.get_item_by_id(50)]
